@@ -58,7 +58,13 @@ class Beer {
     x = xp;
     y = yp;
     displayVertical();
-  } 
+  }
+ 
+  void displayIcon() {
+    int w = width / 14;
+    int h = int(img.height * (1.0 * w/img.width));
+    image(img, num * w, height - h, w, h);
+  }
   
   void displayText(int barH) {
     pushMatrix();
@@ -80,7 +86,6 @@ class Beer {
   
   void backgroundImage() {
    if(mouseOver()) {
-    //int h = int(img.height * (1.0 * imageW/img.width));
     int w = int(img.width * (1.0 * imageH/img.height));
     image(img, 0, 0, w, imageH);
     fill(0);

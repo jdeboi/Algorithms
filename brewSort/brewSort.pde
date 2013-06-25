@@ -1,14 +1,24 @@
+/*
+Jenna deBoisblanc
+jdeboi.com
+June 2013
+
+Louisiana brewSort!
+
+This is a Processing sketch designed to visualize various sort
+algorithms. Currently the program has a single sort object - 
+a 3 way partition quick sort. More sorts in the future...
+
+Press 'n' to advance, 'p' to go back, and 'r' to reset
+*/
+
 import java.io.*;
 import java.util.*;
 
 String[] lines; 
 Beer[] beers;
-
-boolean startSort;
-
 Quicksort qs;
-
-
+boolean startSort;
 int stepIndex = 0;
 color [] colors = {20, #71A03C, #3CA097, 150, 150, #181183, #413F64, #FC0000};
 
@@ -28,12 +38,19 @@ void draw() {
     qs.display();
   }
   else {
+    displayBeerIcons();
     textSize(200);
     fill(0);
-    text("brewSort", 50, 200);
+    text("brewSort", 50, 300);
     textSize(30);
     text("3 way partition quick sort of Louisiana beer by alcohol content", 50, 400);
     text("press 'n' to step through the algorithm", 50, 500);
+  }
+}
+
+void displayBeerIcons() {
+  for(int i = 0; i < beers.length; i++) {
+    beers[i].displayIcon();
   }
 }
 
