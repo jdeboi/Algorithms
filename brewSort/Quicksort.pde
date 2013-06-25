@@ -8,8 +8,10 @@ a log ofthe indexes of beers involved in a swap, which can be used
 to replay/reset all the swaps that occur during quicksort()
 
 2. qsLog.txt
-a file with the positions and colors (stored as an int, colorID) of
-all beers (listed in the beers' original order) at each step in the
+each line of the file contains 
+- positions of all beers listed in the beers' original order
+- colors (stored as an int, colorID) of all beers
+- values of quicksort variables i, j, k, p, q, l, r
 quicksort algorithm. This file is used for the visualization.
 */
 
@@ -146,6 +148,8 @@ class Quicksort {
     setHighlights();
     String line = getPositions();
     line += "," + getHighlights();
+    line += "," + i + "," + j + "," + k;
+    line += "," + p + "," + q + "," + l + "," r;
     qsLog.println(type + "," + line + "," + message);
   }
   
