@@ -9,6 +9,7 @@ class Beer {
   String type;
   PImage img;
   int imageW;
+  int imageH;
   color c;
   
   Beer(int xp, int yp, int nu, String na, String alc, String cal, String typ) {
@@ -24,8 +25,8 @@ class Beer {
     calories = Integer.parseInt(cal);
     type = typ;
     img = loadImage("/img/" + num + ".png");
-    imageW = 35;
-    c = #181183;
+    imageH = height/2;
+    c = colors[0];
   }
 
   void displayHorizontal() {
@@ -42,12 +43,12 @@ class Beer {
   void displayVertical() {
     int h = int(img.height * (1.0 * imageW/img.width));
     int xp = x - imageW/2;
-    int barH = 150;
+    int barH = 0;
     strokeWeight(30);
     fill(c);
     stroke(c);
-    line(x, height - barH, x, height - height * (alcohol/8.5));
-    image(img, xp, height - h, imageW, h);
+    if(mouseOver()) stroke(#929830);
+    line(x, height - barH, x, height - height * (alcohol/10.0));
     fill(0);
     textSize(18);
     displayText(barH);
@@ -68,20 +69,41 @@ class Beer {
     textSize(16);
     fill(255);
     text(name, 0, 0);
+    /*
     float tw = textWidth(alcoholS);
     textSize(18);
-    translate(height * (alcohol/8.5) - barH - tw - 5, 0);
+    translate(height * (alcohol/10.0) - barH - tw - 5, 0);
     text(alcoholS, 0, 0);
+    */
     popMatrix();
   }
- 
+  
+  void backgroundImage() {
+   if(mouseOver()) {
+    //int h = int(img.height * (1.0 * imageW/img.width));
+    int w = int(img.width * (1.0 * imageH/img.height));
+    image(img, 0, 0, w, imageH);
+    fill(0);
+    textSize(120);
+    text(alcoholS + " %", w + 20, 200);
+   }
+  } 
+  
   void resetColor() {
-   c = #181183;
+   c = colors[0];
   }
  
   void setColor(color col) {
     c = col;
   }
+  
+  boolean mouseOver() {
+    if(mouseX > x - 30/2 && mouseX < x + 30/2
+        && mouseY > height - height * (alcohol/10.0)) {
+         return true;
+    }
+    return false;
+  } 
 }
   
   

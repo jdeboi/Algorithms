@@ -54,6 +54,7 @@ class Quicksort {
   // swap arrow variables
   int startArrow;
   int endArrow;
+  int arrowIndex;
   
   // arrays to keep track of beer positions and colors
   // at various points through the quicksort algorithm
@@ -89,41 +90,59 @@ class Quicksort {
   ///////////////////////////////////////////////////////////////////////
   // display functions
   ///////////////////////////////////////////////////////////////////////
-  void displayQS() {
-    displayText(300, 50);
-    displayCode(670, 40);
+  void display() {
+    displayText(900, 40);
+    displayCode(650, 100);
     displayArrow();
   }
   
   void displayCode(int x, int y) {
     for(int i = 0; i < code.length; i++) {
       fill(0);
-      if(codeHighlighted(i)) fill(0, 250, 250);
       textSize(12);
+      if(codeHighlighted(i)) {
+        fill(255,0,0);
+        textSize(14);
+      }
       text(code[i], x, i*14 + y);
     }
   }
   
   void displayText(int x, int y) {
-    int spacing = 30;
+    int spacing = 20;
     textSize(20);
+    // i
     fill(colors[1]);
     text("i = " + i, x, y);
+    // j
     fill(colors[2]);
     y += spacing;
     text("j = " + j, x, y);
-    fill(colors[7]);
+    // k
+    fill(colors[3]);
     y += spacing;
-    text("pivot = beers[" + r + "]", x, y); 
+    text("k = " + k, x, y);
+    // p
     fill(colors[4]);
     y += spacing;
     text("p = " + p, x, y);
+    // q
+    fill(colors[5]);
     y += spacing;
     text("q = " + q, x, y);
-    fill(colors[5]);
-    fill(0);
+    // r
+    fill(colors[7]);
     y += spacing;
+    text("pivot = beers[" + r + "]", x, y); 
+    fill(0);
+    y += spacing * 2;
     text(message, x, y);
+    y += spacing *3;
+    text("'n' for next step", x, y);
+    y += spacing;
+    text("'p' for previous step", x, y);
+    y += spacing;
+    text("'r' to reset", x, y);
   }
   
   void displayArrow() {
@@ -167,7 +186,7 @@ class Quicksort {
   }
   
   void parseDataLine() {
-    String [] temp = new String [45];
+    String [] temp = new String [46];
     temp= split(log[stepIndex], ',');
     lineID = Integer.parseInt(temp[0]);
     i = Integer.parseInt(temp[37]);
@@ -178,6 +197,10 @@ class Quicksort {
     l = Integer.parseInt(temp[42]);
     r = Integer.parseInt(temp[43]);
     message = temp[44];
+    // take care of the quicksort() funciton call which has
+    // a comma in the messsage
+    if(lineID == 26 || lineID == 27) message += "," + temp[45];
+    // update beer positions and colors
     for (int i = 0; i < beers.length; i++) {
       int pos = Integer.parseInt(temp[i + 1]);
       int colID = Integer.parseInt(temp[i + 1 + beers.length]);
@@ -227,6 +250,7 @@ class Quicksort {
     stopPrinting();
     loadFiles();
     resetBeer();
+    resetVariables();
   }
   
   // the algorithm interspersed with the function printLine
@@ -342,6 +366,17 @@ class Quicksort {
       swapBeer(x, y);
     }
     while (swapIndex > 0);
+  }
+  
+  void resetVariables() {
+    i = 0;
+    j = 0;
+    k = 0;
+    p = 0;
+    q = 0;
+    l = 0;
+    r = 0;
+    message = "";
   }
   
   // populations the positions array with each beer's
