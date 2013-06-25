@@ -1,0 +1,42 @@
+void quicksort (int left, int right) {			28
+    if (right <= left) {				   		0
+        return;				   					1	
+    }
+    float pivot = beers[right].alcohol;			2, 3
+    i = left - 1;					   			2, 3		
+    j = right;									2, 3	
+    p = left - 1;								2, 3
+    q = right;									2, 3
+    l = left;									2, 3
+    r = right;									2, 3
+    for (;;) {									4
+      while (beers[++i].alcohol < pivot);		4, 5
+      while (pivot < beers[--j].alcohol) {		6
+         if(j == left) {						7
+		    break;				    			8	
+	 }				
+      }
+      if (i >= j) {								9
+         break;					    				10	
+      }
+      swapBeer (i, j);				    		11	
+      if (pivot == beers[i].alcohol) {			12
+        p++; 									13
+        swapBeer(p, i);							13, 14
+      } 
+      if (pivot == beers[j].alcohol) {			15
+        q--;									16
+        swapBeer(j, q);							16, 17
+      }
+    }
+    swapBeer(i, right);							18
+    j = i - 1;									19, 20
+    i = i + 1;									19, 20
+    for (k = left; k < p; k++, j--) swapBeer(k, j);  21, 22
+    for (k = right - 1; k > q; k--, i++) swapBeer(k, i); 23, 24, 25
+  
+    quicksort(left, j);							26
+    quicksort(i, right);						27
+  }
+
+  

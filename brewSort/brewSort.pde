@@ -29,7 +29,6 @@ void draw() {
   frameRate(10);
   displayBeer();
   qs.displayQS();
-  //displayArrow();
 }
 
 void displayBeer() {
@@ -71,16 +70,9 @@ void keyPressed() {
     stepIndex = 0;
   }
 }
-    
-
-
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
 
 void loadBeer() {
-  lines = loadStrings("shortListBrews.csv");
+  lines = loadStrings("/files/shortListBrews.csv");
   beers = new Beer[lines.length - 1];
   swapIndex = 0;
    for (int i = 1; i < lines.length; i++) {
@@ -90,43 +82,4 @@ void loadBeer() {
   }
 }
 
-
-void setArrow(int x, int y) {
-  showArrow = true;
-  arrowIndex = 0;
-  startArrow = (x + 1) * 35;
-  endArrow = (y + 1) * 35;
-}
-
-void displayArrow() {
-  if(showArrow) {
-    int len = startArrow - endArrow;
-    stroke(0);
-    fill(0);
-    strokeWeight(5);
-    int aHeight = 50;
-    line(startArrow, aHeight, endArrow, aHeight);
-    
-    // draw arrow head
-    // determine direction of arrow head
-    if(len > 0) {
-      line(endArrow + 5, aHeight - 5, endArrow, aHeight);
-      line(endArrow + 5, aHeight + 5, endArrow, aHeight);
-    }
-    else {
-      line(endArrow - 5, aHeight - 5, endArrow, aHeight);
-      line(endArrow - 5, aHeight + 5, endArrow, aHeight);
-    }
-  }
-}
-
-void checkArrow() {
-  if(showArrow) {
-    arrowIndex++;
-    if(arrowIndex == 2) {
-      arrowIndex = 0;
-      showArrow = false;
-    }
-  }
-}
 

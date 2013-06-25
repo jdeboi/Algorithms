@@ -1,7 +1,9 @@
 /* 
+3 Way Partition Quick Sort
+
 This Quicksort object is designed for creating logs necessary to
 create visulazations of the quicksort algorithm, in this case, a 
-3 partition quicksort. When the object is instantiated, the constructor 
+3 way partition quicksort. When the object is instantiated, the constructor 
 generates 2 files:
 
 1. qsSwaps.txt
@@ -17,17 +19,17 @@ step in the quicksort algorithm and contains the following information:
 */
 
 class Quicksort {
-  
   // PrintWriter objects to keep track of beer swaps/colors
   PrintWriter qsSwaps;
   PrintWriter qsLog;
   
-  // variable to keep track of step in algorithm
-  int id;
-  
+  // String array of the text files
   String[] swaps;
   String[] log;
   String[] code;
+  
+  // variable to keep track of step in algorithm
+  int lineID;
   
   // variables used in quicksort()
   int i;
@@ -45,21 +47,24 @@ class Quicksort {
   int swapIndex = 0;
   int swapNum = 0;
   
-  // flag to keep turn on/off printing swaps
+  // flags
   boolean printing;
+  boolean showArrow;
   
+  // swap arrow variables
+  int startArrow;
+  int endArrow;
   
   // arrays to keep track of beer positions and colors
   // at various points through the quicksort algorithm
   int[] positions;
   int[] highlights;
   
-  // array
+  // start and stop line numbers from qs.txt that correspond 
+  // to line IDs - the first number printed by printLine()
+  // this 2D array is used determine code text highlights at each
+  // step in the algorithm 
   int[][] codeBlocks = {
-    // start and stop line numbers from qs.txt that correspond 
-    // to line IDs - the first number printed by printLine()
-    // this 2D array is used determine code text highlights at each
-    // step in the algorithm 
     // line id 0, 1, 2, 3
     {1, 1}, {2, 2}, {4, 10}, {4, 10},        
     {11, 12}, {12, 12}, {13, 13},{14, 14},   // 4 - 7  
@@ -71,9 +76,152 @@ class Quicksort {
     {0, 0} //28
   };
   
+  ///////////////////////////////////////////////////////////////////////
+  // constructor
+  ///////////////////////////////////////////////////////////////////////
   // the constructor is where we call the functions that
   // print the steps of the algorithm
   Quicksort() {
+    createFiles();
+    showArrow = false;
+  }  
+  
+  ///////////////////////////////////////////////////////////////////////
+  // display functions
+  ///////////////////////////////////////////////////////////////////////
+  void displayQS() {
+    displayText(300, 50);
+    displayCode(670, 40);
+    displayArrow();
+  }
+  
+  void displayCode(int x, int y) {
+    for(int i = 0; i < code.length; i++) {
+      fill(0);
+      if(codeHighlighted(i)) fill(0, 250, 250);
+      textSize(12);
+      text(code[i], x, i*14 + y);
+    }
+  }
+  
+  void displayText(int x, int y) {
+    int spacing = 30;
+    textSize(20);
+    fill(colors[1]);
+    text("i = " + i, x, y);
+    fill(colors[2]);
+    y += spacing;
+    text("j = " + j, x, y);
+    fill(colors[7]);
+    y += spacing;
+    text("pivot = beers[" + r + "]", x, y); 
+    fill(colors[4]);
+    y += spacing;
+    text("p = " + p, x, y);
+    y += spacing;
+    text("q = " + q, x, y);
+    fill(colors[5]);
+    fill(0);
+    y += spacing;
+    text(message, x, y);
+  }
+  
+  void displayArrow() {
+    if(showArrow) {
+      int len = startArrow - endArrow;
+      stroke(0);
+      fill(0);
+      strokeWeight(5);
+      int aHeight = 50;
+      line(startArrow, aHeight, endArrow, aHeight);
+      
+      // draw arrow head
+      // determine direction of arrow head
+      if(len > 0) {
+        line(endArrow + 5, aHeight - 5, endArrow, aHeight);
+        line(endArrow + 5, aHeight + 5, endArrow, aHeight);
+      }
+      else {
+        line(endArrow - 5, aHeight - 5, endArrow, aHeight);
+        line(endArrow - 5, aHeight + 5, endArrow, aHeight);
+      }
+    }
+  }
+  
+  boolean codeHighlighted(int lineNum) {
+    int start = codeBlocks[lineID][0];
+    int stop = codeBlocks[lineID][1];
+    if (lineNum >= start && lineNum <= stop) {
+      return true;
+    }
+    return false;
+  }
+  
+  ///////////////////////////////////////////////////////////////////////
+  // functions to step through the algorithm
+  ///////////////////////////////////////////////////////////////////////
+  void stepQS() {
+    parseDataLine();
+    checkForSwap();
+    checkArrow();
+  }
+  
+  void parseDataLine() {
+    String [] temp = new String [45];
+    temp= split(log[stepIndex], ',');
+    lineID = Integer.parseInt(temp[0]);
+    i = Integer.parseInt(temp[37]);
+    j = Integer.parseInt(temp[38]);
+    k = Integer.parseInt(temp[39]);
+    p = Integer.parseInt(temp[40]);
+    q = Integer.parseInt(temp[41]);
+    l = Integer.parseInt(temp[42]);
+    r = Integer.parseInt(temp[43]);
+    message = temp[44];
+    for (int i = 0; i < beers.length; i++) {
+      int pos = Integer.parseInt(temp[i + 1]);
+      int colID = Integer.parseInt(temp[i + 1 + beers.length]);
+      beers[i].x = pos;
+      beers[i].c = colors[colID];
+    }
+  }
+  
+  boolean atLogEnd() {
+    if(stepIndex == log.length) return true;
+    return false;
+  }
+  
+  void checkForSwap() {
+    if (lineID == 11) setArrow(i, j);
+    else if (lineID == 13) setArrow(i, p);
+    else if (lineID == 16) setArrow(j, q);
+    else if (lineID == 18) setArrow(i, r);
+    else if (lineID == 21) setArrow(k, j);
+    else if (lineID == 24) setArrow(k, i);
+  }
+  
+   void setArrow(int x, int y) {
+    showArrow = true;
+    arrowIndex = 0;
+    startArrow = (x + 1) * 35;
+    endArrow = (y + 1) * 35;
+  }
+  
+  void checkArrow() {
+    if(showArrow) {
+      arrowIndex++;
+      if(arrowIndex == 2) {
+        arrowIndex = 0;
+        showArrow = false;
+      }
+    }
+  }
+  
+  ///////////////////////////////////////////////////////////////////////
+  // functions for generating log files
+  ///////////////////////////////////////////////////////////////////////
+  
+  void createFiles() {
     startPrinting();
     quicksort(0, beers.length - 1);
     stopPrinting();
@@ -173,14 +321,14 @@ class Quicksort {
     qsSwaps.println(line);
   }
   
-  void printLine(String message, int type) {
+  void printLine(String message, int lineID) {
     setPositions();
     setHighlights();
     String line = getPositions();
     line += "," + getHighlights();
     line += "," + i + "," + j + "," + k;
     line += "," + p + "," + q + "," + l + "," + r;
-    qsLog.println(type + "," + line + "," + message);
+    qsLog.println(lineID + "," + line + "," + message);
   }
   
   // returns beers[] array to original order
@@ -244,8 +392,8 @@ class Quicksort {
   void startPrinting() {
     positions = new int[beers.length];
     highlights = new int[beers.length];
-    qsSwaps = createWriter("qsSwaps.txt");
-    qsLog = createWriter("qsLog.txt");
+    qsSwaps = createWriter("files/qsSwaps.txt");
+    qsLog = createWriter("files/qsLog.txt");
     printing = true;
   }
   
@@ -258,83 +406,11 @@ class Quicksort {
   }
   
   void loadFiles() {
-    swaps = loadStrings("qsSwaps.txt");
-    log = loadStrings("qsLog.txt");
-    code = loadStrings("qs.txt");
+    swaps = loadStrings("/files/qsSwaps.txt");
+    log = loadStrings("/files/qsLog.txt");
+    code = loadStrings("/files/qs.txt");
     swapIndex = swapNum;
   }
  
-
-///////////////////////////////////////////////////
-  
-  void parseDataLine() {
-    String [] temp = new String [45];
-    temp= split(log[stepIndex], ',');
-    id = Integer.parseInt(temp[0]);
-    i = Integer.parseInt(temp[37]);
-    j = Integer.parseInt(temp[38]);
-    k = Integer.parseInt(temp[39]);
-    p = Integer.parseInt(temp[40]);
-    q = Integer.parseInt(temp[41]);
-    l = Integer.parseInt(temp[42]);
-    r = Integer.parseInt(temp[43]);
-    message = temp[44];
-    for (int i = 0; i < beers.length; i++) {
-      int pos = Integer.parseInt(temp[i + 1]);
-      int colID = Integer.parseInt(temp[i + 1 + beers.length]);
-      beers[i].x = pos;
-      beers[i].c = colors[colID];
-    }
-  }
-  
-  boolean atLogEnd() {
-    if(stepIndex == log.length) return true;
-    return false;
-  }
-  
-  void displayQS() {
-    displayText(500, 50);
-    displayCode(670, 40);
-  }
-  
-  void displayCode(int x, int y) {
-    for(int i = 0; i < code.length; i++) {
-      fill(0);
-      if(codeHighlighted(i)) fill(0, 250, 250);
-      textSize(17);
-      text(code[i], x, i*16 + y);
-    }
-  }
-  
-  void displayText(int x, int y) {
-    fill(colors[1]);
-    text("i = " + i, x, y);
-    fill(colors[2]);
-    y += 15;
-    text("j = " + j, x, y);
-    fill(colors[7]);
-    y += 15;
-    text("pivot = beers[" + r + "]", x, y); 
-    fill(colors[4]);
-    y += 15;
-    text("p = " + p, x, y);
-    y += 15;
-    text("q = " + q, x, y);
-    fill(colors[5]);
-    fill(0);
-    y += 15;
-    text(message, x, y);
-  }
-  
-  boolean codeHighlighted(int lineNum) {
-    if(i == -1) return false;
-    int start = codeBlocks[i][0];
-    int stop = codeBlocks[i][1];
-    println(start + " " + stop);
-    if (lineNum >= start && lineNum <= stop) {
-      return true;
-    }
-    return false;
-  }
 }
 
