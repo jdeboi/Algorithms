@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Brew Sort</title>
+		<style>
+			.axis path,
+			.axis line{
+				fill:none;
+				stroke:none;
+				shape-rendering: crispEdges;
+			}
+			#beerBars {
+				position: absolute;
+			}
+			#beerLegend {
+				position: absolute;
+				margin-top: 50px;
+				margin-left: 75px;
+			}
+			#beerImage img{
+				float:left;
+			}
+			#beerText {
+				position: absolute;
+				font-size: 12px;
+				color: black;
+				margin-left: 170px;
+				margin-top: 60px;
+			}
+			#beerAlc {
+				position: absolute;
+				font-size: 50px;
+				margin-top: -40px;
+				margin-left: 170px;
+				color: black;
+			}
+			#code {
+				width: 480px;
+				height: 180px;
+				padding-left: 10px;
+				font-size: 8px;
+				float:left;
+			}
+			
+			#column1 {
+				float:left;
+				margin-top: 5px;
+			}
+			
+			#column2 {
+				float: left;
+				margin-top: 20px;
+			}
+			
+			#column3 {
+				float:left;
+				margin-top:40px;
+			}
+			#beerMessage {
+				font-size:18px;
+				position:absolute;
+				margin-top:-20px;
+				margin-left:300px;
+				width:300px;
+				height:200px;
+			}
+			text.lineM {
+				display: none;
+			}
+			span.one {
+				padding-left: 10px;
+			}
+			span.two {
+				padding-left: 20px;
+			}
+			span.three {
+				padding-left: 30px;
+			}
+			span.four {
+				padding-left: 40px;
+			}
+		</style>
+        <script type="text/javascript" src="d3/d3.v3.js"></script>
+    </head>
+    <body>
+		
+		<div id="beerImage">
+			<img src="" height="300" style="opacity: 0.4; -moz-opacity: 0.4; filter:alpha(opacity=40);">
+			<div id="beerAlc"></div>
+			<div id="beerText"></div>
+		</div>
+		<div id="beerBars"></div>
+		<div style="clear:both"></div>
+		<br/>
+		<div id="buttons">
+			<button id="next" type="button">next</button>
+			<button id="previous" type="button">previous</button>
+			<button id="reset" type="button">reset</button>
+			<button id="finish" type="button">finish</button>
+		</div>
+		<div id="beerLegend"></div>
+		<div id="beerMessage"></div>
+		<div id="code">
+			<div id="column1">
+				<span id ="line1" class="none">void quicksort (int left, int right){ </span><br />	
+				<span id ="line2" class="one">if (right <= left) return;</span><br />	
+				<span id ="line5"  class="one">float pivot = beers[right].alcohol;</span><br />			
+				<span id ="line6"  class="one">i = left - 1;</span><br />			
+				<span id ="line7"  class="one">j = right;</span><br />				
+				<span id ="line8"  class="one">p = left - 1;</span><br />		
+				<span id ="line9"  class="one">q = right;</span><br />			
+				<span id ="line10" class="one">l = left;</span><br />		
+				<span id ="line11" class="one">r = right;</span><br />	
+			</div>	
+			<div id="column2">					
+				<span id ="line12" class="one">for (;;) {</span><br />	
+				<span id ="line13" class="two">while (beers[++i].alcohol < pivot);</span><br />	
+				<span id ="line14" class="two">while (pivot < beers[--j].alcohol) {</span><br />	
+				<span id ="line15" class="three">if(j == left) break;</span><br />
+				<span id ="line18" class="two">}</span><br />
+				<span id ="line19" class="two">if (i >= j) break;</span><br />
+				<span id ="line22" class="two">swapBeer (i, j);</span><br />		
+				<span id ="line23" class="two">if (pivot == beers[i].alcohol) {</span><br />		
+				<span id ="line24" class="three">p++;</span><br />	
+				<span id ="line25" class="three">swapBeer(p, i);</span><br />		
+				<span id ="line26" class="two">}</span><br /> 
+				<span id ="line27" class="two">if (pivot == beers[j].alcohol) {</span><br />		
+				<span id ="line28" class="three">q--;</span><br />	
+				<span id ="line29" class="three">swapBeer(j, q);</span><br />		
+				<span id ="line30" class="two">}</span><br />		
+				<span id ="line31" class="one">}</span><br />
+			</div>		
+			<div id="column3">			
+				<span id ="line32" class="one">swapBeer(i, right);</span><br />		
+				<span id ="line33" class="one">j = i - 1;</span><br />		
+				<span id ="line34" class="one">i = i + 1;</span><br />		
+				<span id ="line35" class="one">for (k = left; k < p; k++, j--) swapBeer(k, j);</span><br />
+				<span id ="line35" class="one">for (k = right - 1; k > q; k--, i++) swapBeer(k, i);</span><br /><br />
+				<span id ="line37" class="one">quicksort(left, j);</span><br />
+				<span id ="line38" class="one">quicksort(i, right);</span><br />
+				<span id ="line39" class="none">}</span><br />
+			</div>	
+		</div>	
+        <script type="text/javascript">
+			var width = 325;
+			var height = 300;
+			var svgBeer = d3.select("#beerBars").append("svg").attr("height", height).attr("width", width);
+			
+			// beer legend - values of i, j, k, l, etc.
+			var svgLeg = d3.select("#beerLegend").append("svg").attr("height", 250).attr("width", 50);
+			
+			// step message
+			var svgMes = d3.select("#beerMessage").append("svg")
+			
+			// variable to keep track of step in the algorithm
+			var stepIndex = 0;
+			var csvLength = 461;
+			
+			// array of beer objects containing info about each beer
+			var beers = [ 
+				{name: "Abita Amber", alcohol: 4.5, calories: 128, type: "lager", p: 0, c: 0, url: "img/0.png"},
+				{name: "Abita Jockamo IPA", alcohol: 6.5, calories: 190, type: "IPA", p: 0, c:0, url: "img/1.png"},
+				{name: "Abita Purple Haze", alcohol: 4.2, calories: 128, type: "lager", p: 0, c:0, url: "img/2.png"},
+				{name: "Abita Strawberry", alcohol: 4.2, calories: 128, type: "lager", p: 0, c: 0, url: "img/3.png"},
+				{name: "Abita Satsuma", alcohol: 5.2, calories: 155, type: "lager", p: 0, c: 0, url: "img/4.png"},
+				{name: "Abita Andygator", alcohol: 8.0, calories: 235, type: "lager", p: 0, c: 0, url: "img/5.png"},
+				{name: "LA-31 Bière Pâle", alcohol: 5.7, calories: 172, type: "ale", p: 0, c: 0, url: "img/6.png"},
+				{name: "LA-31 Bière Noire", alcohol: 4.8, calories: 144, type: "porter", p: 0, c: 0, url: "img/7.png"},
+				{name: "Chafunkta Voo Ka Ray IPA", alcohol: 7.5, calories: 225, type: "IPA", p: 0, c: 0, url: "img/8.png"},
+				{name: "Chafunkta Old 504", alcohol: 5.5, calories: 165, type: "porter", p: 0, c: 0, url: "img/9.png"},
+				{name: "NOLA Blonde", alcohol: 4.9, calories: 147, type: "ale", p: 0, c: 0, url: "img/10.png"},
+				{name: "NOLA Brown", alcohol: 3.9, calories: 117, type: "ale", p: 0, c: 0, url: "img/11.png"},
+				{name: "NOLA Hopitoulas", alcohol: 6.5, calories: 195, type: "IPA", p: 0, c: 0, url: "img/12.png"},
+				{name: "Parish Canebrake", alcohol: 4.9, calories: 150, type: "ale", p: 0, c: 0, url: "img/13.png"},
+				{name: "Tin Roof Blonde Ale", alcohol: 4.5, calories: 135, type: "ale", p: 0, c: 0, url: "img/14.png"},
+				{name: "Tin Roof Amber Ale", alcohol: 4.5, calories: 135, type: "ale", p: 0, c: 0, url: "img/15.png"},
+				{name: "Tin Roof Voodoo Bengal Pale Ale", alcohol: 5.5, calories: 165, type: "ale", p: 0, c: 0, url: "img/16.png"},
+				{name: "Tin Roof Parade Ground Coffee Porter", alcohol: 7.0, calories: 210, type: "porter", p: 0, c: 0, url: "img/17.png"}
+			];
+			
+			// colors for particular steps in the algorithm
+			var colors = ["#00025a", "#71A03C", "#3CA097", 150, 150, "#181183", "#413F64", "#FC0000", "black"];
+			
+			//i,j,k,p,q,l,r,message1,message2
+			var variables = new Array();
+			
+			var lineID = 0;	
+			
+			// array used to determine whether to highlight a line for a given 
+			// step in the algorithm
+			var codeBlocks = [
+				"line2", "line3", "line5", "line5", 
+				"line13", "line13", "line14", "line15",
+				"line16", "line19", "line20", "line22",
+				"line23", "line24", "line25", "line27",
+				"line29", "line29", "line32", "line33",
+				"line34", "line35", "line35", "line36",
+				"line36", "line36", "line38", "line39",
+				"line1" 
+			];
+					
+			d3.csv("qsLog.csv", 
+				function(error, data) { 
+					; 
+					lineNum = data[stepIndex].lineNum*=1
+					
+					// setup variables labels
+					variables[0] = "i = " + data[stepIndex].i;
+					variables[1] = "j = " + data[stepIndex].j;
+					variables[2] = "k = " + data[stepIndex].k;
+					variables[3] = "p = " + data[stepIndex].p;
+					variables[4] = "q = " + data[stepIndex].q;
+					variables[5] = "l = " + data[stepIndex].l;
+					variables[6] = "r = " + data[stepIndex].r;
+					
+					svgLeg.selectAll("text").data(variables).enter().append("text")
+					.text(function(d) { return d;})
+					.attr("x", 5)
+					.attr("y", function(d,i) {return i * 10 + 15;})
+					.attr("font-size", function(d,i){ return 10;})
+					.attr("fill", function(d, i) {return colors[i + 1];})
+					
+					// setup message
+					var message = new Array();
+					message[0] = data[stepIndex].message1;
+					if(data[stepIndex].message2 != null) {
+						message[0] += ", " + data[stepIndex].message2;
+					}
+					svgMes.selectAll("text").data(message).enter().append("text")
+					.text(function(d) {return d;})
+					
+					// setup code highlights 
+					lineID = data[stepIndex].lineID*=1;
+					console.log(lineNum);
+					// reset code to black
+					d3.select("body").selectAll("span")
+					.style("color","black")
+					// highlight line that matches lineID
+					var lineHighlight = "#"+ codeBlocks[lineID];
+					d3.select(lineHighlight)
+					.style("color", "blue");
+					
+					
+					// setup beer bar graph
+					for(var i = 0; i < beers.length; i++) {
+						var index = 'p' + i;
+						var pos = data[stepIndex][index]*=1;
+						index = 'c' + i;
+						var col = data[stepIndex][index]*=1;
+						beers[i].p = pos;
+						beers[i].c = col;
+					}
+					svgBeer.selectAll("rect").data(beers).enter().append("rect")
+					.attr("x", function(d){ return d.p * 0.5 - 10;})
+					.attr("y", function(d) { return 400 - d.alcohol * 350 / 8.0;})
+					.attr("width", 10)
+					.attr("height", function(d) { return d.alcohol * 350 / 8.0 - 100;})
+					.attr("fill", function(d){ return colors[d.c];})
+					.on("mouseover", function(d,i) {
+						d3.select("#beerImage").select("img")
+						.attr("src",beers[i].url)
+						d3.select(this).attr("fill", "#6b998b");
+						d3.select("#beerText")
+						.html("<p>"+beers[i].name+"</p>")
+						d3.select("#beerAlc")
+						.html("<p>"+beers[i].alcohol+"%</p>")
+					})
+					.on("mouseout", function(d) {
+						d3.select(this).attr("fill", function(d){ return colors[d.c];})
+					});
+					
+				} 
+			); 
+			
+			d3.select("#next")
+				.on("click", function() {
+					stepIndex++;
+					if(stepIndex > csvLength) {
+						stepIndex = 0;
+					}
+					updateRects();
+				});
+			d3.select("#previous")
+				.on("click", function() {
+					stepIndex--;
+					if(stepIndex < 0) {
+						stepIndex = csvLength;
+					}
+					updateRects();
+				});	
+			d3.select("#reset")
+				.on("click", function() {
+					stepIndex = 0;
+					updateRects();
+				});
+				
+			d3.select("#finish")
+				.on("click", function() {
+					stepIndex = csvLength;
+					updateRects();
+				});
+				
+			function updateRects() {
+				d3.csv("qsLog.csv", 
+					function(error, data) {
+					
+						// setup beer bar graph
+						for(var i = 0; i < beers.length; i++) {
+							var index = 'p' + i;
+							var pos = data[stepIndex][index]*=1;
+							index = 'c' + i;
+							var col = data[stepIndex][index]*=1;
+							beers[i].p = pos;
+							beers[i].c = col;
+						}
+						svgBeer.selectAll("rect").data(beers)
+						.attr("x", function(d){ return d.p * 0.5 - 10;})
+						.attr("y", function(d) { return 400 - d.alcohol * 350 / 8.0;})
+						.attr("fill", function(d){ return colors[d.c];})
+						
+						// setup code highlights 
+						lineID = data[stepIndex].lineID*=1;
+						// reset text
+						d3.select("body").selectAll("span")
+						.style("color","black")
+						// highlight current line in code
+						var lineHighlight = "#"+ codeBlocks[lineID];
+						d3.select(lineHighlight)
+						.style("color", "blue")
+					
+						lineNum = data[stepIndex].lineNum*=1
+					
+						// setup variables labels
+						variables[0] = "i = " + data[stepIndex].i;
+						variables[1] = "j = " + data[stepIndex].j;
+						variables[2] = "k = " + data[stepIndex].k;
+						variables[3] = "p = " + data[stepIndex].p;
+						variables[4] = "q = " + data[stepIndex].q;
+						variables[5] = "l = " + data[stepIndex].l;
+						variables[6] = "r = " + data[stepIndex].r;
+						svgLeg.selectAll("text").data(variables)
+						.text(function(d) { return d;})
+						
+						// setup message
+						var message = new Array();
+						message[0] = data[stepIndex].message1;
+						if(data[stepIndex].message2 != null) {
+							message[0] += ", " + data[stepIndex].message2;
+						}
+						svgMes.selectAll("text").data(message)
+						.text(function(d) {return d;})
+						.attr("x", 5)
+						.attr("y", 20)
+						
+					} 
+				); 
+				
+			}	
+        </script>
+    </body>
+</html>

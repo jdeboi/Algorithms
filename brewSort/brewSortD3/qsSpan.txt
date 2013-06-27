@@ -1,0 +1,40 @@
+<span id ="line1"> void quicksort (int left, int right) { <span /><br />	
+<span id ="line2">    if (right <= left) {				  <span /><br /> 		
+<span id ="line3">        return;				   		  <span /><br />				
+<span id ="line4">    }									  <span /><br />	
+<span id ="line5">    float pivot = beers[right].alcohol; <span /><br />			
+<span id ="line6">    i = left - 1;					   	  <span /><br />			
+<span id ="line7">    j = right;						  <span /><br />				
+<span id ="line8">    p = left - 1;						  <span /><br />		
+<span id ="line9">    q = right;						  <span /><br />			
+<span id ="line10">    l = left;							  <span /><br />		
+<span id ="line11">    r = right;						  <span /><br />			
+<span id ="line12">    for (;;) {						  <span /><br />	
+<span id ="line13">      while (beers[++i].alcohol < pivot);	<span /><br />	
+<span id ="line14">      while (pivot < beers[--j].alcohol) {	<span /><br />	
+<span id ="line15">         if(j == left) {						<span /><br />
+<span id ="line16">            break;				    		<span /><br />		
+<span id ="line17">         }								<span /><br />
+<span id ="line18">      }									<span /><br />
+<span id ="line19">      if (i >= j) {						<span /><br />		
+<span id ="line20">         break;					    	<span /><br />		
+<span id ="line21">      }									<span /><br />
+<span id ="line22">      swapBeer (i, j);				    <span /><br />		
+<span id ="line23">      if (pivot == beers[i].alcohol) {	<span /><br />		
+<span id ="line24">        p++; 								<span /><br />	
+<span id ="line25">        swapBeer(p, i);					<span /><br />		
+<span id ="line26">      }									<span /><br /> 
+<span id ="line27">      if (pivot == beers[j].alcohol) {	<span /><br />		
+<span id ="line28">        q--;								<span /><br />	
+<span id ="line29">        swapBeer(j, q);					<span /><br />		
+<span id ="line30">      }									<span /><br />
+<span id ="line31">    }										<span /><br />
+<span id ="line32">    swapBeer(i, right);					<span /><br />		
+<span id ="line33">    j = i - 1;							<span /><br />		
+<span id ="line34">    i = i + 1;							<span /><br />		
+<span id ="line35">    for (k = left; k < p; k++, j--) swapBeer(k, j); <span /><br />
+<span id ="line35">    for (k = right - 1; k > q; k--, i++) swapBeer(k, i); <span /><br />
+  														<br />
+<span id ="line37">    quicksort(left, j);							<span /><br />
+<span id ="line38">    quicksort(i, right);							<span /><br />
+<span id ="line39"> }												<span /><br />
